@@ -46,15 +46,15 @@ static int push_in_back(struct List *list, const char *line) {
 }
 
 static void free_list(struct List *list) {
-    struct Node *list_head=list->head;
+    struct Node *list_head = list->head;
     while (list_head != NULL) {
         struct Node *next = list_head->next;
         free(list_head->line);
         free(list_head);
         list_head = next;
     }
-    list->head=NULL;
-    list->tail=NULL;
+    list->head = NULL;
+    list->tail = NULL;
 }
 
 int main(void) {
@@ -84,7 +84,17 @@ int main(void) {
     }
 
     for (struct Node *tmp = list.head; tmp != NULL; tmp = tmp->next) {
-        fputs(tmp->line, stdout);
+        if (fputs(tmp->line, stdout) == EOF) {
+            perror("fputs");
+            free_list(&list);
+            return 1;
+        }
+    }
+
+    if (fflush(stdout) == EOF) {
+        perror("fflush");
+        free_list(&list);
+        return 1;
     }
 
     free_list(&list);
