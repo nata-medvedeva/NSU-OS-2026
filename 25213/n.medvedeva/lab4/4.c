@@ -23,12 +23,14 @@ static int push_in_back(struct List *list, const char *line) {
     int len = strlen(line) + 1;
     char *copy = malloc(len);
     if (copy == NULL) {
+        perror("malloc");
         return -1;
     }
     memcpy(copy, line, len);
 
     struct Node *node = malloc(sizeof(*node));
     if (node == NULL) {
+        perror("malloc");
         free(copy);
         return -1;
     }
@@ -64,9 +66,9 @@ int main(void) {
 
     while (1) {
         if (fgets(buf, sizeof(buf), stdin) == NULL) {
-            if (feof(stdin)) {
+            /*if (feof(stdin)) {
                 break;
-            }
+            }*/
             perror("fgets");
             free_list(&list);
             return 1;
@@ -82,8 +84,9 @@ int main(void) {
             return 1;
         }
     }
-
-    for (struct Node *tmp = list.head; tmp != NULL; tmp = tmp->next) {
+    
+    struct Node *tmp;
+    for (tmp = list.head; tmp != NULL; tmp = tmp->next) {
         if (fputs(tmp->line, stdout) == EOF) {
             perror("fputs");
             free_list(&list);
